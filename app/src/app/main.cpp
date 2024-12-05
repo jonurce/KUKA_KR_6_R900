@@ -17,8 +17,6 @@
 #include <visualization/imgui/windows/trajectoryloggerwindow.h>
 #include <visualization/imgui/windows/worldobjectconfigurationwindow.h>
 
-//HELLOPOE
-
 void render_scene_without_default_tool(std::shared_ptr<AIS4104::RobotWrapper> robot, std::shared_ptr<AIS4104::Simulation::RobotControlInterface> control_iface)
 {
     AIS4104::Visualization::RobotScene scene(robot->threepp_robot_ptr(), {

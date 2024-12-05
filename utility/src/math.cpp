@@ -4,29 +4,72 @@
 namespace AIS4104::utility {
 
 //TASK: Implement the following function definitions
+
+bool floatEquals(double a, double b)
+{
+    return std::abs(a - b) < equal_precision;
+}
+
 Eigen::Vector3d euler_zyx_from_rotation_matrix(const Eigen::Matrix3d &r)
 {
-    return Eigen::Vector3d::Zero();
+    double a = 0.0; //Z axis Alpha
+    double b = 0.0; //Y axis Beta
+    double c = 0.0; //X axis Gamma
+
+    if(floatEquals(r(2,0),1.0))
+    {
+        b = -EIGEN_PI / 2.0;
+        c = -std::atan2(r(0,1), r(1,1));
+    }
+    else if(floatEquals(r(2,0),-1.0))
+    {
+        b = EIGEN_PI / 2.0;
+        c = std::atan2(r(0,1), r(1,1));
+    }
+    else
+    {
+        b = std::atan2(-r(2,0), std::sqrt(r(0,0)*r(0,0)+r(1,0)*r(1,0)));
+        a = std::atan2(r(1,0), r(0,0));
+        c = std::atan2(r(2,1), r(2,2));
+    }
+
+    return Eigen::Vector3d{a, b, c};
 }
 
 Eigen::Matrix3d skew_symmetric(const Eigen::Vector3d &v)
 {
-    return Eigen::Matrix3d::Identity();
+    Eigen::Matrix3d matrix;
+    matrix << 0, -v(2), v(1),
+    v(2), 0, -v(0),
+    -v(1), v(0), 0;
+    return matrix;
 }
 
 Eigen::Vector3d from_skew_symmetric(const Eigen::Matrix3d &m)
 {
-    return Eigen::Vector3d::Zero();
+    Eigen::Vector3d vector{m(2,1), m(0,2), m(1,0)};
+    return vector;
 }
 
 Eigen::MatrixXd adjoint_matrix(const Eigen::Matrix3d &r, const Eigen::Vector3d &p)
 {
-    return Eigen::MatrixXd::Identity(6, 6);
+    Eigen::MatrixXd ad(6,6);
+    ad.block<3,3>(0,0) = r;
+    ad.block<3,3>(0,3) = Eigen::Matrix3d::Zero();
+    ad.block<3,3>(3,3) = r;
+    ad.block<3,3>(3,0) = skew_symmetric(p) * r;
+    return ad;
 }
 
 Eigen::MatrixXd adjoint_matrix(const Eigen::Matrix4d &tf)
 {
-    return Eigen::MatrixXd::Identity(6, 6);
+    Eigen::Matrix3d R = tf.block<3,3>(0,0);
+    Eigen::MatrixXd ad(6,6);
+    ad.block<3,3>(0,0) = R;
+    ad.block<3,3>(0,3) = Eigen::Matrix3d::Zero();
+    ad.block<3,3>(3,3) = R;
+    ad.block<3,3>(3,0) = skew_symmetric(tf.block<3,1>(0,3)) * R;
+    return ad;
 }
 
 Eigen::VectorXd adjoint_map(const Eigen::VectorXd &twist, const Eigen::Matrix4d &tf)
@@ -36,12 +79,16 @@ Eigen::VectorXd adjoint_map(const Eigen::VectorXd &twist, const Eigen::Matrix4d 
 
 Eigen::VectorXd twist(const Eigen::Vector3d &w, const Eigen::Vector3d &v)
 {
-    return Eigen::VectorXd::Zero(6);
+    Eigen::VectorXd tw(6);
+    tw << w,v;
+    return tw;
 }
 
 Eigen::VectorXd twist(const Eigen::Vector3d &q, const Eigen::Vector3d &s, double h, double angular_velocity)
 {
-    return Eigen::VectorXd::Zero(6);
+    Eigen::VectorXd tw(6);
+    tw << angular_velocity*s,angular_velocity*(-s.cross(q) + h * s);
+    return tw;
 }
 
 Eigen::Matrix4d twist_matrix(const Eigen::Vector3d &w, const Eigen::Vector3d &v)

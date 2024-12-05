@@ -16,7 +16,7 @@ TrajectoryLoggerWindow::TrajectoryLoggerWindow(Simulation::RobotControlInterface
 {
     m_active = state.active;
     std::string directory = state.directory.string();
-    strcpy_s(m_directory_path, sizeof(m_directory_path), &directory[0]);
+    std::strncpy(m_directory_path, &directory[0], sizeof(m_directory_path));
     m_control_interface.set_logger_parameters(state);
 }
 

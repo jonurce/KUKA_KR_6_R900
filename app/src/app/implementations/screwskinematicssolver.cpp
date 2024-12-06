@@ -66,7 +66,7 @@ Eigen::Matrix4d ScrewsKinematicsSolver::fk_solve(const Eigen::VectorXd &joint_po
     Eigen::Matrix4d S_05 = utility::matrix_exponential(w_5,-w_5.cross(q_05),t_45);
     Eigen::Matrix4d S_06 = utility::matrix_exponential(w_6,-w_6.cross(q_06),t_56);
 
-    //Equation (4.13) page 140, MR pre-print 2019
+    //Equation (4.13), page 140, MR pre-print 2019
     Eigen::Matrix4d T = S_01*S_02*S_03*S_04*S_05*S_06*utility::transformation_matrix(R_sb,q_sb);
     return T;
 }

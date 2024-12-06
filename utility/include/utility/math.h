@@ -10,6 +10,8 @@ constexpr double deg_to_rad = 0.0174532925;
 
 constexpr double equal_precision = 1e-3;
 bool floatEquals(double a, double b);
+double cot(double rad);
+
 Eigen::Vector3d euler_zyx_from_rotation_matrix(const Eigen::Matrix3d &r);
 
 Eigen::Matrix3d skew_symmetric(const Eigen::Vector3d &v);

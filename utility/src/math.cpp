@@ -282,7 +282,7 @@ Eigen::Matrix3d rotate_z(double radians)
 //Equations (3.13), (3.14), (3.15) and (3.16), page 65, MR pre-print 2019
 Eigen::Matrix3d rotation_matrix_from_frame_axes(const Eigen::Vector3d &x, const Eigen::Vector3d &y, const Eigen::Vector3d &z)
 {
-    //... equation from the book implemented here
+    //... equations from the book implemented here
     Eigen::Matrix3d matrix;
     matrix.block<3,1>(0,0) = x;
     matrix.block<3,1>(0,1) = y;

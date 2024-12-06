@@ -164,7 +164,7 @@ Eigen::Matrix4d matrix_exponential(const Eigen::Vector3d &w, const Eigen::Vector
         matrix = transformation_matrix(Eigen::Matrix3d::Identity(),v*theta);
     }
     else{
-        Eigen::Matrix4d skew_w = skew_symmetric(w);
+        Eigen::Matrix3d skew_w = skew_symmetric(w);
         matrix = transformation_matrix(matrix_exponential(w, theta),(Eigen::Matrix3d::Identity()*theta + (1.0-std::cos(theta))*skew_w + (theta-std::sin(theta))*skew_w*skew_w)*v);
     }
     return matrix;

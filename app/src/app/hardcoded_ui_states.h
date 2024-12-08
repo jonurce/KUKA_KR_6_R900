@@ -22,13 +22,15 @@ inline Visualization::TrajectoryLoggerWindow::State default_logger_state()
     };
 }
 
-//TASK: Default tool configuration:
+//DONE: Default tool configuration: (not sure)
 // a) Set the default value of the orientation of the 3D model (adapter + humerus) to render correctly on the flange.
 // b) Set the default value of the frame transformation from the flange to the humeral rotation center.
 // (The humerus must face the glenoid for the identity orientation.)
 
 inline Visualization::ToolConfigurationWindow::State default_tool_state()
 {
+    //Eigen::Vector3f{0.040+0.0025, -0.025, 0.03366+0.1159};
+    //Eigen::Vector3f{-(0.040+0.0025), 0.025, -(0.03366+0.1159)};
     return Visualization::ToolConfigurationWindow::State{
         //Activate the default tool 3D model.
         false,
@@ -39,11 +41,11 @@ inline Visualization::ToolConfigurationWindow::State default_tool_state()
         //Scale of the tool 3D model used in rendering
         Eigen::Vector3f{1.f, 1.f, 1.f},
         //Position of the tool 3D model used in rendering
-        Eigen::Vector3f{0.f, 0.f, 0.f},
+        Eigen::Vector3f{0.040+0.0025, -0.025, 0.03366+0.1159},
         //Euler ZYX orientation (IN DEGREES) of the tool 3D model used in rendering
-        Eigen::Vector3f{0.f, 0.f, 0.f},
+        Eigen::Vector3f{0.f, -90.f, 0.f},
         //Tool center point offset used for robot kinematics.
-        Eigen::Vector3f{0.f, 0.f, 0.f},
+        Eigen::Vector3f{0.040+0.0025, -0.025, 0.03366+0.1159},
         //Euler ZYX orientation (IN DEGREES) of the tool center point used for robot kinematics.
         Eigen::Vector3f{-90.f, -15.f, 0.f}
     };

@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "app/robotwrapper.h"
 
 #include "app/urdf_loaders.h"
@@ -49,6 +51,7 @@ int main(int, char **)
     std::filesystem::path ur3e_path = "urdf/urdf_files/matlab/ur_e_description/urdf/universalUR3e.urdf";
 
     auto solver = AIS4104::hardcoded_kr6r_tracik_solver();
+    //auto solver=AIS4104::hardcoded_kr6r_screw_solver();
     auto robot = std::make_shared<AIS4104::RobotWrapper>(AIS4104::load_threepp_robot(kr6_path), solver);
 
     // auto solver = AIS4104::hardcoded_ur3e_tracik_solver();

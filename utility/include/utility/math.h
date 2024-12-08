@@ -50,6 +50,7 @@ Eigen::Matrix4d transformation_matrix(const Eigen::Vector3d &p);
 Eigen::Matrix4d transformation_matrix(const Eigen::Matrix3d &r);
 Eigen::Matrix4d transformation_matrix(const Eigen::Matrix3d &r, const Eigen::Vector3d &p);
 
+std::pair<Eigen::Vector3d,Eigen::Vector3d> default_tool_state();
 }
 
 #endif

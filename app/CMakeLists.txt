@@ -11,12 +11,15 @@ add_executable(app
     src/app/implementations/motionplannerimpl.cpp
     src/app/implementations/screwskinematicssolver.h
     src/app/implementations/screwskinematicssolver.cpp
+    src/app/implementations/ptptrajectorygenerator.h
+    src/app/implementations/ptptrajectorygenerator.cpp
 
     src/app/examples/tracikkinematicssolver.h
     src/app/examples/tracikkinematicssolver.cpp
     src/app/examples/ptplinetrajectorygeneratorexample.h
     src/app/examples/ptplinetrajectorygeneratorexample.cpp
     src/app/implementations/ui_state_serializer.h
+        src/app/implementations/ptptrajectorygenerator.cpp
 )
 
 target_pedantic_build(app)

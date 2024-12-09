@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "app/examples/ptplinetrajectorygeneratorexample.h"
+#include "app/implementations/ptptrajectorygenerator.h"
 
 #include <utility/vectors.h>
 
@@ -26,25 +27,30 @@ Eigen::VectorXd MotionPlannerImpl::task_space_pose(const Eigen::Matrix4d &pose)
     return m_robot.ik_solve_pose(pose, m_robot.joint_positions());
 }
 
-//TASK: Implement a function that calculates the pose of the given screw, and solves the IK to obtain the joint positions
+//DONE: Implement a function that calculates the pose of the given screw, and solves the IK to obtain the joint positions
 Eigen::VectorXd MotionPlannerImpl::task_space_screw(const Eigen::Vector3d &w, const Eigen::Vector3d &q, double theta, double h)
 {
-    std::cout << "MotionPlannerImpl::task_space_screw:" << std::endl << w.transpose() << std::endl << q.transpose() << std::endl << theta << std::endl << h << std::endl << std::endl;
-    return m_robot.joint_positions();
+    //std::cout << "MotionPlannerImpl::task_space_screw:" << std::endl << w.transpose() << std::endl << q.transpose() << std::endl << theta << std::endl << h << std::endl << std::endl;
+    Eigen::VectorXd screw = utility::screw_axis(q,w.normalized(),h);
+    Eigen::Matrix4d T_w_desired = utility::matrix_exponential(screw.block<3,1>(0,0),screw.block<3,1>(3,0),theta);
+    return m_robot.ik_solve_pose(T_w_desired,m_robot.joint_positions());
 }
 
-//TASK: Implement jogging in tool frame from the start pose along the displacement and rotation
+//DONE: Implement jogging in tool frame from the start pose along the displacement and rotation
 Eigen::VectorXd MotionPlannerImpl::tool_frame_displace(const Eigen::Matrix4d &tw_pose, const Eigen::Vector3d &tf_offset, const Eigen::Vector3d &tf_zyx)
 {
-    std::cout << "MotionPlannerImpl::tool_frame_displace:" << std::endl << tw_pose << std::endl << tf_offset.transpose() << std::endl << tf_zyx.transpose() << std::endl << std::endl;
-    return m_robot.joint_positions();
+    //std::cout << "MotionPlannerImpl::tool_frame_displace:" << std::endl << tw_pose << std::endl << tf_offset.transpose() << std::endl << tf_zyx.transpose() << std::endl << std::endl;
+    Eigen::Matrix4d T_w_desired = tw_pose*utility::transformation_matrix(utility::rotation_matrix_from_euler_zyx(tf_zyx),tf_offset);
+    return m_robot.ik_solve_pose(T_w_desired,m_robot.joint_positions());
 }
 
-//TASK: Implement a P2P trajectory generator from the current configuration to the target.
+//DONE: Implement a P2P trajectory generator from the current configuration to the target.
 std::shared_ptr<Simulation::TrajectoryGenerator> MotionPlannerImpl::task_space_ptp_trajectory(const Eigen::Vector3d &pos, const Eigen::Vector3d &euler_zyx)
 {
-    std::cout << "MotionPlannerImpl::task_space_ptp_trajectory:" << std::endl << pos.transpose() << std::endl << euler_zyx.transpose() << std::endl << std::endl;
-    return nullptr;
+    //std::cout << "MotionPlannerImpl::task_space_ptp_trajectory:" << std::endl << pos.transpose() << std::endl << euler_zyx.transpose() << std::endl << std::endl;
+    Eigen::Matrix4d T_w_desired = utility::transformation_matrix(utility::rotation_matrix_from_euler_zyx(euler_zyx),pos);
+    Eigen::VectorXd joint_positions = m_robot.ik_solve_pose(T_w_desired, m_robot.joint_positions());
+    return std::make_shared<PTPTrajectoryGenerator>(m_robot.joint_positions(),joint_positions);
 }
 
 //TASK: Implement a LIN trajectory generator from the current configuration to the target.

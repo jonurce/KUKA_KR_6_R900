@@ -13,6 +13,9 @@ add_executable(app
     src/app/implementations/screwskinematicssolver.cpp
     src/app/implementations/ptptrajectorygenerator.h
     src/app/implementations/ptptrajectorygenerator.cpp
+    src/app/implementations/multipointtrajectorygenerator.h
+    src/app/implementations/multipointtrajectorygenerator.cpp
+
 
     src/app/examples/tracikkinematicssolver.h
     src/app/examples/tracikkinematicssolver.cpp

@@ -4,6 +4,7 @@
 
 #include "app/examples/ptplinetrajectorygeneratorexample.h"
 #include "app/implementations/ptptrajectorygenerator.h"
+#include "app/implementations/multipointtrajectorygenerator.h"
 
 #include <utility/vectors.h>
 

@@ -1,19 +1,19 @@
-#include "ptptrajectorygenerator.h"
+#include "multipointtrajectorygenerator.h"
 
 using namespace AIS4104;
 
-void PTPTrajectoryGenerator::stop()
+void MPTrajectoryGenerator::stop()
 {
     m_stopped = true;
 }
 
-bool PTPTrajectoryGenerator::has_reached_endpoint() const
+bool MPTrajectoryGenerator::has_reached_endpoint() const
 {
     return m_current == m_total || m_stopped;
 }
 
-//Formulas without reference, maximum velocity and acceleration, page 332, MR pre-print 2019
-bool PTPTrajectoryGenerator::plan_trajectory(const Simulation::JointLimits &limits, double velocity_factor)
+//TODO:Formulas without reference, maximum velocity and acceleration, page 332, MR pre-print 2019
+bool MPTrajectoryGenerator::plan_trajectory(const Simulation::JointLimits &limits, double velocity_factor)
 {
     if(m_w0.isApprox(m_w1))
     {
@@ -37,8 +37,8 @@ bool PTPTrajectoryGenerator::plan_trajectory(const Simulation::JointLimits &limi
     return true;
 }
 
-//Equation (9.11) page 332, MR pre-print 2019
-Eigen::VectorXd PTPTrajectoryGenerator::joint_positions(std::chrono::nanoseconds delta_t)
+//TODO:Equation (9.11) page 332, MR pre-print 2019
+Eigen::VectorXd MPTrajectoryGenerator::joint_positions(std::chrono::nanoseconds delta_t)
 {
     //... equation from the book implemented here
     if(m_stopped)

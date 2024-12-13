@@ -44,8 +44,6 @@ class MultipointTrajectoryGenerator : public TrajectoryGenerator
 public:
     MultipointTrajectoryGenerator(const std::vector<Eigen::VectorXd> &waypoints)
         : m_waypoints(waypoints)
-        , m_w0(waypoints.front())
-        , m_w1(waypoints.back())
     {
     }
 
@@ -53,8 +51,6 @@ public:
 
 protected:
     std::vector<Eigen::VectorXd> m_waypoints;
-    Eigen::VectorXd m_w0;
-    Eigen::VectorXd m_w1;
 };
 
 }

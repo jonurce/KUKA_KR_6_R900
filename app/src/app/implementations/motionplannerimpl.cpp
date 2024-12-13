@@ -48,17 +48,28 @@ Eigen::VectorXd MotionPlannerImpl::tool_frame_displace(const Eigen::Matrix4d &tw
 //DONE: Implement a P2P trajectory generator from the current configuration to the target.
 std::shared_ptr<Simulation::TrajectoryGenerator> MotionPlannerImpl::task_space_ptp_trajectory(const Eigen::Vector3d &pos, const Eigen::Vector3d &euler_zyx)
 {
-    //std::cout << "MotionPlannerImpl::task_space_ptp_trajectory:" << std::endl << pos.transpose() << std::endl << euler_zyx.transpose() << std::endl << std::endl;
     Eigen::Matrix4d T_w_desired = utility::transformation_matrix(utility::rotation_matrix_from_euler_zyx(euler_zyx),pos);
-    Eigen::VectorXd joint_positions = m_robot.ik_solve_pose(T_w_desired, m_robot.joint_positions());
-    return std::make_shared<PTPTrajectoryGenerator>(m_robot.joint_positions(),joint_positions);
+    Eigen::VectorXd joint_desired = m_robot.ik_solve_pose(T_w_desired, m_robot.joint_positions());
+    return std::make_shared<PTPTrajectoryGenerator>(m_robot.joint_positions(),joint_desired);
 }
 
 //TASK: Implement a LIN trajectory generator from the current configuration to the target.
 std::shared_ptr<Simulation::TrajectoryGenerator> MotionPlannerImpl::task_space_lin_trajectory(const Eigen::Vector3d &pos, const Eigen::Vector3d &euler_zyx)
 {
-    std::cout << "MotionPlannerImpl::task_space_lin_trajectory:" << std::endl << pos.transpose() << std::endl << euler_zyx.transpose() << std::endl << std::endl;
-    return nullptr;
+    Eigen::Matrix4d T_w_desired;
+    Eigen::VectorXd current_joints = m_robot.joint_positions();
+    std::vector<Eigen::VectorXd> waypoints = {m_robot.joint_positions()};
+    Eigen::Vector3d current_pos = m_robot.current_position();
+    Eigen::Vector3d current_zyx = m_robot.current_orientation_zyx();
+    double n_waypoints = 1.0;
+    for (int i = 0; i < n_waypoints+1; i++) {
+        current_pos += (pos-current_pos)/(n_waypoints+1.0-i);
+        current_zyx += (euler_zyx-current_zyx)/(n_waypoints+1.0-i);
+        T_w_desired = utility::transformation_matrix(utility::rotation_matrix_from_euler_zyx(current_zyx),current_pos);
+        current_joints = m_robot.ik_solve_pose(T_w_desired, current_joints);
+        waypoints.push_back(current_joints);
+    }
+    return std::make_shared<MPTrajectoryGenerator>(waypoints);
 }
 
 //TASK: Implement a screw trajectory generator from the current configuration to the target.

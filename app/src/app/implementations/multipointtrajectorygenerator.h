@@ -21,6 +21,15 @@ namespace AIS4104 {
         std::atomic<bool> m_stopped;
         std::chrono::nanoseconds m_total;
         std::chrono::nanoseconds m_current;
+        std::vector<uint64_t> m_times;
+        int i_segment;
+        double DELTA_T;
+        Eigen::VectorXd a_j0;
+        Eigen::VectorXd a_j1;
+        Eigen::VectorXd a_jplus;
+        Eigen::VectorXd a_j2;
+        Eigen::VectorXd a_j3;
+        double acumulated_delta_t;
     };
 
 }

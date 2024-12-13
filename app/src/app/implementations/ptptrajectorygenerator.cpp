@@ -27,8 +27,8 @@ bool PTPTrajectoryGenerator::plan_trajectory(const Simulation::JointLimits &limi
         Eigen::VectorXd acceleration_limits = limits.acceleration * velocity_factor;
         Eigen::VectorXd diff = (m_w1 - m_w0).cwiseAbs();
         //... equations from the book implemented here
-        Eigen::VectorXd times_vel = 3/2*(diff.array() / velocity_limits.array());
-        Eigen::VectorXd times_accel = sqrt(6*(diff.array() / velocity_limits.array()));
+        Eigen::VectorXd times_vel = 3.0/2.0*(diff.array() / velocity_limits.array());
+        Eigen::VectorXd times_accel = sqrt(6.0*(diff.array() / velocity_limits.array()));
         Eigen::VectorXd times(times_vel.size()+times_accel.size());
         times<<times_vel,times_accel;
         uint64_t duration = times.maxCoeff()*1000000000.0;

@@ -56,7 +56,7 @@ Eigen::VectorXd MPTrajectoryGenerator::joint_positions(std::chrono::nanoseconds 
     //... equation from the book implemented here
     i_segment = std::clamp(i_segment, 0, static_cast<int>(m_times.size()));
     if(i_segment == 0) {
-        DELTA_T = static_cast<double>(m_times[i_segment]);
+        DELTA_T = static_cast<double>(m_times[i_segment])/1000000000.0;
         a_j0 = m_waypoints[i_segment];
         a_j1 = Eigen::VectorXd::Zero(m_waypoints[0].size());
         if(m_waypoints.size() <= 2) {
@@ -74,7 +74,7 @@ Eigen::VectorXd MPTrajectoryGenerator::joint_positions(std::chrono::nanoseconds 
     if (i_segment < m_times.size()) {
         //m_times[i_segment] < static_cast<uint64_t>(m_total.count()) &&
         if(static_cast<uint64_t>(m_current.count()) == m_times[i_segment]) {
-            DELTA_T = static_cast<double>(m_times[i_segment]-m_times[i_segment-1]);
+            DELTA_T = static_cast<double>(m_times[i_segment]-m_times[i_segment-1])/1000000000.0;
             a_j0 = m_waypoints[i_segment];
             a_j1 = a_jplus;
             if (i_segment == m_times.size()-1) {
@@ -82,7 +82,7 @@ Eigen::VectorXd MPTrajectoryGenerator::joint_positions(std::chrono::nanoseconds 
             }
             else {
                 a_jplus = (m_waypoints[i_segment+1]-m_waypoints[i_segment-1])/
-                    static_cast<double>(m_times[i_segment]-m_times[i_segment-1]);
+                    (static_cast<double>(m_times[i_segment]-m_times[i_segment-1])/1000000000.0);
             }
             a_j2 = (3*m_waypoints[i_segment+1]-3*a_j0-2*a_j1*DELTA_T-a_jplus*DELTA_T)/pow(DELTA_T,2);
             a_j3 = (2*a_j0+(a_j1+a_jplus)*DELTA_T-2*m_waypoints[i_segment+1])/pow(DELTA_T,3);
@@ -92,7 +92,7 @@ Eigen::VectorXd MPTrajectoryGenerator::joint_positions(std::chrono::nanoseconds 
     }
 
     m_current = std::clamp(m_current + delta_t, std::chrono::nanoseconds(0), m_total);
-    acumulated_delta_t += static_cast<double>(delta_t.count());
+    acumulated_delta_t += static_cast<double>(delta_t.count())/1000000000.0;
     if(m_stopped)
     {
         return a_j0+a_j1*acumulated_delta_t+a_j2*pow(acumulated_delta_t,2.0)+a_j3*pow(acumulated_delta_t,3.0);

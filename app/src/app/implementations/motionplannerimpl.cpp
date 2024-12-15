@@ -71,7 +71,7 @@ std::shared_ptr<Simulation::TrajectoryGenerator> MotionPlannerImpl::task_space_l
     return std::make_shared<MPTrajectoryGenerator>(waypoints);
 }
 
-//DONE: Implement a screw trajectory generator from the current configuration to the target. (Not sure)
+//DONE: Implement a screw trajectory generator from the current configuration to the target.(Not sure)
 std::shared_ptr<Simulation::TrajectoryGenerator> MotionPlannerImpl::task_space_screw_trajectory(const Eigen::Vector3d &w, const Eigen::Vector3d &q, double theta, double h)
 {
     Eigen::Matrix4d T_w_desired;

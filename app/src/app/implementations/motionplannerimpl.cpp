@@ -58,14 +58,15 @@ std::shared_ptr<Simulation::TrajectoryGenerator> MotionPlannerImpl::task_space_l
 {
     Eigen::Matrix4d T_w_desired;
     Eigen::VectorXd current_joints = m_robot.joint_positions();
-    std::vector<Eigen::VectorXd> waypoints = {m_robot.joint_positions()};
+    std::vector<Eigen::VectorXd> waypoints = {Eigen::VectorXd::Zero(current_joints.size())};
+    waypoints={m_robot.joint_positions()};
     Eigen::Vector3d current_pos = m_robot.current_position();
     Eigen::Vector3d current_zyx = m_robot.current_orientation_zyx();
-    double n_waypoints = 1.0;
-    for (int i = 0; i < n_waypoints+1; i++) {
-        current_pos += (pos-current_pos)/(n_waypoints+1.0-i);
-        current_zyx += (euler_zyx-current_zyx)/(n_waypoints+1.0-i);
-        T_w_desired = utility::transformation_matrix(utility::rotation_matrix_from_euler_zyx(current_zyx),current_pos);
+    double n_segments = 2.0;
+    for (int i = 0; i < n_segments; i++) {
+        current_pos += (pos-current_pos)/(n_segments-i);
+        current_zyx += (euler_zyx-current_zyx)/(n_segments-i);
+        T_w_desired = utility::transformation_matrix(utility::rotation_matrix_from_euler_zyx(current_zyx), current_pos);
         current_joints = m_robot.ik_solve_pose(T_w_desired, current_joints);
         waypoints.push_back(current_joints);
     }
@@ -75,8 +76,19 @@ std::shared_ptr<Simulation::TrajectoryGenerator> MotionPlannerImpl::task_space_l
 //TASK: Implement a screw trajectory generator from the current configuration to the target.
 std::shared_ptr<Simulation::TrajectoryGenerator> MotionPlannerImpl::task_space_screw_trajectory(const Eigen::Vector3d &w, const Eigen::Vector3d &q, double theta, double h)
 {
-    std::cout << "MotionPlannerImpl::task_space_screw_trajectory:" << std::endl << w.transpose() << std::endl << q.transpose() << std::endl << theta << std::endl << h << std::endl << std::endl;
-    return nullptr;
+    Eigen::Matrix4d T_w_desired;
+    Eigen::VectorXd current_joints = m_robot.joint_positions();
+    std::vector<Eigen::VectorXd> waypoints = {Eigen::VectorXd::Zero(current_joints.size())};
+    waypoints={m_robot.joint_positions()};
+    double current_theta = 0.0;
+    double n_segments = 2.0;
+    for (int i = 0; i < n_segments; i++) {
+        current_theta += (theta-current_theta)/(n_segments-i);
+        T_w_desired = utility::matrix_exponential(utility::screw_axis(q,w.normalized(),h),current_theta);
+        current_joints = m_robot.ik_solve_pose(T_w_desired, current_joints);
+        waypoints.push_back(current_joints);
+    }
+    return std::make_shared<MPTrajectoryGenerator>(waypoints);
 }
 
 std::shared_ptr<Simulation::TrajectoryGenerator> MotionPlannerImpl::task_space_trajectory(const std::vector<Eigen::Matrix4d> &waypoints)

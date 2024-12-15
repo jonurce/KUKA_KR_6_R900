@@ -353,16 +353,4 @@ Eigen::Matrix4d transformation_matrix(const Eigen::Matrix3d &r, const Eigen::Vec
     matrix.block<1,4>(3,0) << 0.0,0.0,0.0,1.0;
     return matrix;
 }
-
-//TODO Remove?
-std::pair<Eigen::Vector3d,Eigen::Vector3d> default_tool_state() {
-    Eigen::Vector3d position{0.668,0.080,0.449};
-    Eigen::Vector3d angles{90.f,0.f,15.f};
-    Eigen::Matrix4d T_wf = transformation_matrix(rotation_matrix_from_euler_zyx(angles),position);
-    Eigen::Matrix4d T_fa = transformation_matrix(rotation_matrix_from_euler_zyx(Eigen::Vector3d{0.0,-90.0,0.0}),Eigen::Vector3d{0.040,0.000,0.3366});
-    Eigen::Matrix4d T_ac = transformation_matrix(rotation_matrix_from_euler_zyx(Eigen::Vector3d{-90.0,0.0,-90.0}),Eigen::Vector3d{0.1159,-0.025,0.0025});
-    Eigen::Matrix4d T = T_wf*T_fa*T_ac;
-    return {T.block<3,1>(0,3),rad_to_deg*euler_zyx_from_rotation_matrix(T.block<3,3>(0,0))};
-}
-
 }

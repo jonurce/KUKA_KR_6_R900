@@ -16,7 +16,7 @@
 
 using namespace AIS4104;
 
-//TASK: Remove the std::cout prints as the functions have been implemented. (e.g., std::cout << "MotionPlannerImpl::FUNCTION_NAME" << std::endl;)
+//DONE: Remove the std::cout prints as the functions have been implemented. (e.g., std::cout << "MotionPlannerImpl::FUNCTION_NAME" << std::endl;)
 
 MotionPlannerImpl::MotionPlannerImpl(const Simulation::Robot &robot)
 : m_robot(robot)
@@ -31,7 +31,6 @@ Eigen::VectorXd MotionPlannerImpl::task_space_pose(const Eigen::Matrix4d &pose)
 //DONE: Implement a function that calculates the pose of the given screw, and solves the IK to obtain the joint positions
 Eigen::VectorXd MotionPlannerImpl::task_space_screw(const Eigen::Vector3d &w, const Eigen::Vector3d &q, double theta, double h)
 {
-    //std::cout << "MotionPlannerImpl::task_space_screw:" << std::endl << w.transpose() << std::endl << q.transpose() << std::endl << theta << std::endl << h << std::endl << std::endl;
     Eigen::VectorXd screw = utility::screw_axis(q,w.normalized(),h);
     Eigen::Matrix4d T_w_desired = utility::matrix_exponential(screw.block<3,1>(0,0),screw.block<3,1>(3,0),theta);
     return m_robot.ik_solve_pose(T_w_desired,m_robot.joint_positions());
@@ -40,7 +39,6 @@ Eigen::VectorXd MotionPlannerImpl::task_space_screw(const Eigen::Vector3d &w, co
 //DONE: Implement jogging in tool frame from the start pose along the displacement and rotation
 Eigen::VectorXd MotionPlannerImpl::tool_frame_displace(const Eigen::Matrix4d &tw_pose, const Eigen::Vector3d &tf_offset, const Eigen::Vector3d &tf_zyx)
 {
-    //std::cout << "MotionPlannerImpl::tool_frame_displace:" << std::endl << tw_pose << std::endl << tf_offset.transpose() << std::endl << tf_zyx.transpose() << std::endl << std::endl;
     Eigen::Matrix4d T_w_desired = tw_pose*utility::transformation_matrix(utility::rotation_matrix_from_euler_zyx(tf_zyx),tf_offset);
     return m_robot.ik_solve_pose(T_w_desired,m_robot.joint_positions());
 }
@@ -53,7 +51,7 @@ std::shared_ptr<Simulation::TrajectoryGenerator> MotionPlannerImpl::task_space_p
     return std::make_shared<PTPTrajectoryGenerator>(m_robot.joint_positions(),joint_desired);
 }
 
-//TASK: Implement a LIN trajectory generator from the current configuration to the target.
+//DONE: Implement a LIN trajectory generator from the current configuration to the target. (Not sure)
 std::shared_ptr<Simulation::TrajectoryGenerator> MotionPlannerImpl::task_space_lin_trajectory(const Eigen::Vector3d &pos, const Eigen::Vector3d &euler_zyx)
 {
     Eigen::Matrix4d T_w_desired;
@@ -62,7 +60,7 @@ std::shared_ptr<Simulation::TrajectoryGenerator> MotionPlannerImpl::task_space_l
     waypoints={m_robot.joint_positions()};
     Eigen::Vector3d current_pos = m_robot.current_position();
     Eigen::Vector3d current_zyx = m_robot.current_orientation_zyx();
-    double n_segments = 2.0;
+    double n_segments = 1.0;
     for (int i = 0; i < n_segments; i++) {
         current_pos += (pos-current_pos)/(n_segments-i);
         current_zyx += (euler_zyx-current_zyx)/(n_segments-i);
@@ -73,7 +71,7 @@ std::shared_ptr<Simulation::TrajectoryGenerator> MotionPlannerImpl::task_space_l
     return std::make_shared<MPTrajectoryGenerator>(waypoints);
 }
 
-//TASK: Implement a screw trajectory generator from the current configuration to the target.
+//DONE: Implement a screw trajectory generator from the current configuration to the target. (Not sure)
 std::shared_ptr<Simulation::TrajectoryGenerator> MotionPlannerImpl::task_space_screw_trajectory(const Eigen::Vector3d &w, const Eigen::Vector3d &q, double theta, double h)
 {
     Eigen::Matrix4d T_w_desired;
@@ -81,7 +79,7 @@ std::shared_ptr<Simulation::TrajectoryGenerator> MotionPlannerImpl::task_space_s
     std::vector<Eigen::VectorXd> waypoints = {Eigen::VectorXd::Zero(current_joints.size())};
     waypoints={m_robot.joint_positions()};
     double current_theta = 0.0;
-    double n_segments = 2.0;
+    double n_segments = 1.0;
     for (int i = 0; i < n_segments; i++) {
         current_theta += (theta-current_theta)/(n_segments-i);
         T_w_desired = utility::matrix_exponential(utility::screw_axis(q,w.normalized(),h),current_theta);
@@ -110,7 +108,7 @@ std::shared_ptr<Simulation::TrajectoryGenerator> MotionPlannerImpl::task_space_t
     return joint_space_trajectory(joint_positions);
 }
 
-//TASK: Implement joint space trajectory generators.
+//DONE: Implement joint space trajectory generators. (Not included in tasks)
 // a) Implement a point to point generator which does not have infinite acceleration (e.g., polynomial time scaling).
 // b) Change the use of the standard PTPLineTrajectoryGeneratorExample to your custom trajectory generator.
 // c) Implement a multipoint trajectory generator for trajectories with multiple waypoints.
@@ -118,16 +116,16 @@ std::shared_ptr<Simulation::TrajectoryGenerator> MotionPlannerImpl::joint_space_
 {
     std::shared_ptr<Simulation::TrajectoryGenerator> trajectory_generator;
     if(waypoints.size() == 2u)
-        trajectory_generator = std::make_shared<PTPLineTrajectoryGeneratorExample>(waypoints.front(), waypoints.back());
+        trajectory_generator = std::make_shared<PTPTrajectoryGenerator>(waypoints.front(), waypoints.back());
     else if(waypoints.size() == 1u)
-        trajectory_generator = std::make_shared<PTPLineTrajectoryGeneratorExample>(m_robot.joint_positions(), waypoints.front());
+        trajectory_generator = std::make_shared<PTPTrajectoryGenerator>(m_robot.joint_positions(), waypoints.front());
     else if(waypoints.empty())
     {
         spdlog::error("[MotionPlannerImpl::joint_space_trajectory] No waypoints given.");
     }
     else
     {
-        spdlog::error("[MotionPlannerImpl::joint_space_trajectory] Multipoint trajectories are not implemented.");
+        trajectory_generator = std::make_shared<MPTrajectoryGenerator>(waypoints);
     }
     return trajectory_generator;
 }

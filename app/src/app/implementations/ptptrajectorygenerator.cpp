@@ -12,7 +12,8 @@ bool PTPTrajectoryGenerator::has_reached_endpoint() const
     return m_current == m_total || m_stopped;
 }
 
-//Formulas without reference, maximum velocity and acceleration, page 332, MR pre-print 2019
+//Formulas without reference for Third order polynomial, maximum velocity and acceleration, page 332, MR pre-print 2019
+//Own made formulas for Fifth order polynomial
 bool PTPTrajectoryGenerator::plan_trajectory(const Simulation::JointLimits &limits, double velocity_factor)
 {
     if(m_w0.isApprox(m_w1))
@@ -44,7 +45,8 @@ bool PTPTrajectoryGenerator::plan_trajectory(const Simulation::JointLimits &limi
     return true;
 }
 
-//Equation (9.11) page 332, MR pre-print 2019
+//Equation (9.11) page 332, MR pre-print 2019 - Third order polynomial
+//Own made formulas for Fifth order polynomial
 Eigen::VectorXd PTPTrajectoryGenerator::joint_positions(std::chrono::nanoseconds delta_t)
 {
     //... equation from the book implemented here

@@ -22,15 +22,13 @@ inline Visualization::TrajectoryLoggerWindow::State default_logger_state()
     };
 }
 
-//DONE: Default tool configuration: (not sure)
+//DONE: Default tool configuration:
 // a) Set the default value of the orientation of the 3D model (adapter + humerus) to render correctly on the flange.
 // b) Set the default value of the frame transformation from the flange to the humeral rotation center.
 // (The humerus must face the glenoid for the identity orientation.)
 
 inline Visualization::ToolConfigurationWindow::State default_tool_state()
 {
-    //Eigen::Vector3f{0.040+0.0025, -0.025, 0.03366+0.1159};
-    //Eigen::Vector3f{-(0.040+0.0025), 0.025, -(0.03366+0.1159)};
     return Visualization::ToolConfigurationWindow::State{
         //Activate the default tool 3D model.
         false,

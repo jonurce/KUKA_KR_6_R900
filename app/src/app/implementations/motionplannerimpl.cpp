@@ -51,7 +51,7 @@ std::shared_ptr<Simulation::TrajectoryGenerator> MotionPlannerImpl::task_space_p
     return std::make_shared<PTPTrajectoryGenerator>(m_robot.joint_positions(),joint_desired);
 }
 
-//TODO: Implement a LIN trajectory generator from the current configuration to the target. (Not sure)
+//DONE: Implement a LIN trajectory generator from the current configuration to the target.
 std::shared_ptr<Simulation::TrajectoryGenerator> MotionPlannerImpl::task_space_lin_trajectory(const Eigen::Vector3d &pos, const Eigen::Vector3d &euler_zyx)
 {
     Eigen::Matrix4d T_w_desired;
@@ -60,7 +60,7 @@ std::shared_ptr<Simulation::TrajectoryGenerator> MotionPlannerImpl::task_space_l
     waypoints={m_robot.joint_positions()};
     Eigen::Vector3d current_pos = m_robot.current_position();
     Eigen::Vector3d current_zyx = m_robot.current_orientation_zyx();
-    double n_segments = 1.0;
+    double n_segments = 10.0;
     for (int i = 0; i < n_segments; i++) {
         current_pos += (pos-current_pos)/(n_segments-i);
         current_zyx += (euler_zyx-current_zyx)/(n_segments-i);
@@ -71,7 +71,7 @@ std::shared_ptr<Simulation::TrajectoryGenerator> MotionPlannerImpl::task_space_l
     return std::make_shared<MPTrajectoryGenerator>(waypoints);
 }
 
-//TODO: Implement a screw trajectory generator from the current configuration to the target.(Not sure)
+//DONE: Implement a screw trajectory generator from the current configuration to the target.
 std::shared_ptr<Simulation::TrajectoryGenerator> MotionPlannerImpl::task_space_screw_trajectory(const Eigen::Vector3d &w, const Eigen::Vector3d &q, double theta, double h)
 {
     Eigen::Matrix4d T_w_desired;
@@ -79,7 +79,7 @@ std::shared_ptr<Simulation::TrajectoryGenerator> MotionPlannerImpl::task_space_s
     std::vector<Eigen::VectorXd> waypoints = {Eigen::VectorXd::Zero(current_joints.size())};
     waypoints={m_robot.joint_positions()};
     double current_theta = 0.0;
-    double n_segments = 1.0;
+    double n_segments = 10.0;
     for (int i = 0; i < n_segments; i++) {
         current_theta += (theta-current_theta)/(n_segments-i);
         T_w_desired = utility::matrix_exponential(utility::screw_axis(q,w.normalized(),h),current_theta);

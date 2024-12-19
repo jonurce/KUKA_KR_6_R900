@@ -175,7 +175,7 @@ Eigen::Matrix4d matrix_exponential(const Eigen::Vector3d &w, const Eigen::Vector
 Eigen::Matrix4d matrix_exponential(const Eigen::VectorXd &screw, double theta)
 {
     //... equations from the book implemented here
-    return matrix_exponential(screw.block<3,1>(0,0),screw.block<3,1>(0,3),theta);
+    return matrix_exponential(screw.head(3),screw.tail(3),theta);
 }
 
 //Algorithm page 85, MR pre-print 2019
